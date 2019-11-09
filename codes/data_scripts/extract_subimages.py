@@ -14,8 +14,8 @@ import data.util as data_util  # noqa: E402
 def main():
     mode = 'pair'  # single (one input folder) | pair (extract corresponding GT and LR pairs)
     opt = {}
-    opt['n_thread'] = 20
-    opt['compression_level'] = 3  # 3 is the default value in cv2
+    opt['n_thread'] = 32
+    opt['compression_level'] = 0  # 3 is the default value in cv2
     # CV_IMWRITE_PNG_COMPRESSION from 0 to 9. A higher value means a smaller size and longer
     # compression time. If read raw images during training, use 0 for faster IO speed.
     if mode == 'single':
@@ -26,10 +26,21 @@ def main():
         opt['thres_sz'] = 48  # size threshold
         extract_signle(opt)
     elif mode == 'pair':
-        GT_folder = '../../datasets/DIV2K/DIV2K_train_HR'
-        LR_folder = '../../datasets/DIV2K/DIV2K_train_LR_bicubic/X4'
-        save_GT_folder = '../../datasets/DIV2K/DIV2K800_sub'
-        save_LR_folder = '../../datasets/DIV2K/DIV2K800_sub_bicLRx4'
+        GT_folder = '../../datasets/disp_high_train'
+        LR_folder = '../../datasets/disp_high_train_mod'
+        save_GT_folder = '../../datasets/disp_high_train_sub'
+        save_LR_folder = '../../datasets/disp_high_train_mod_sub'
+        
+#         GT_folder = '../../datasets/disp_low_train'
+#         LR_folder = '../../datasets/disp_low_train_mod'
+#         save_GT_folder = '../../datasets/disp_low_train_sub'
+#         save_LR_folder = '../../datasets/disp_low_train_mod_sub'
+        
+#         GT_folder = '../../datasets/spec_train'
+#         LR_folder = '../../datasets/spec_train_mod'
+#         save_GT_folder = '../../datasets/spec_train_sub'
+#         save_LR_folder = '../../datasets/spec_train_mod_sub'
+        
         scale_ratio = 4
         crop_sz = 480  # the size of each sub-image (GT)
         step = 240  # step of the sliding crop window (GT)
@@ -40,14 +51,15 @@ def main():
         img_LR_list = data_util._get_paths_from_images(LR_folder)
         assert len(img_GT_list) == len(img_LR_list), 'different length of GT_folder and LR_folder.'
         for path_GT, path_LR in zip(img_GT_list, img_LR_list):
-            img_GT = Image.open(path_GT)
-            img_LR = Image.open(path_LR)
-            w_GT, h_GT = img_GT.size
-            w_LR, h_LR = img_LR.size
+            img_GT = cv2.imread(path_GT, cv2.IMREAD_UNCHANGED)
+            img_LR = cv2.imread(path_LR, cv2.IMREAD_UNCHANGED)
+            w_GT, h_GT = img_GT.shape[0:2]
+            w_LR, h_LR = img_LR.shape[0:2]
             assert w_GT / w_LR == scale_ratio, 'GT width [{:d}] is not {:d}X as LR weight [{:d}] for {:s}.'.format(  # noqa: E501
                 w_GT, scale_ratio, w_LR, path_GT)
             assert w_GT / w_LR == scale_ratio, 'GT width [{:d}] is not {:d}X as LR weight [{:d}] for {:s}.'.format(  # noqa: E501
                 w_GT, scale_ratio, w_LR, path_GT)
+            break
         # check crop size, step and threshold size
         assert crop_sz % scale_ratio == 0, 'crop size is not {:d}X multiplication.'.format(
             scale_ratio)
@@ -132,8 +144,8 @@ def worker(path, opt):
             crop_img = np.ascontiguousarray(crop_img)
             cv2.imwrite(
                 osp.join(opt['save_folder'],
-                         img_name.replace('.png', '_s{:03d}.png'.format(index))), crop_img,
-                [cv2.IMWRITE_PNG_COMPRESSION, opt['compression_level']])
+                         img_name.replace('.exr', '_s{:03d}.exr'.format(index))), crop_img,
+                [cv2.IMWRITE_EXR_TYPE, cv2.IMWRITE_EXR_TYPE_FLOAT])
     return 'Processing {:s} ...'.format(img_name)
 
 

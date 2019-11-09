@@ -20,7 +20,7 @@ datasets:
     GT_size: 128
     use_flip: true
     use_rot: true
-    color: RGB
+    color: EXR # no channel_convert
   val:
     name: val_set14
     mode: LQGT

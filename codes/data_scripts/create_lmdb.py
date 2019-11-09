@@ -15,7 +15,7 @@ import utils.util as util  # noqa: E402
 
 
 def main():
-    dataset = 'DIV2K_demo'  # vimeo90K | REDS | general (e.g., DIV2K, 291) | DIV2K_demo |test
+    dataset = 'disp_high'  # vimeo90K | REDS | general (e.g., DIV2K, 291) | DIV2K_demo |test
     mode = 'GT'  # used for vimeo90k and REDS datasets
     # vimeo90k: GT | LR | flow
     # REDS: train_sharp, train_sharp_bicubic, train_blur_bicubic, train_blur, train_blur_comp
@@ -30,20 +30,44 @@ def main():
         opt['lmdb_save_path'] = '../../datasets/DIV2K/DIV2K800_sub.lmdb'
         opt['name'] = 'DIV2K800_sub_GT'
         general_image_folder(opt)
-    elif dataset == 'DIV2K_demo':
+    elif dataset == 'disp_high':
         opt = {}
         ## GT
-        opt['img_folder'] = '../../datasets/DIV2K/DIV2K800_sub'
-        opt['lmdb_save_path'] = '../../datasets/DIV2K/DIV2K800_sub.lmdb'
-        opt['name'] = 'DIV2K800_sub_GT'
+        opt['img_folder'] = '../../datasets/disp_high_train_sub'
+        opt['lmdb_save_path'] = '../../datasets/disp_high_train_sub.lmdb'
+        opt['name'] = 'disp_high_train_sub'
         general_image_folder(opt)
         ## LR
-        opt['img_folder'] = '../../datasets/DIV2K/DIV2K800_sub_bicLRx4'
-        opt['lmdb_save_path'] = '../../datasets/DIV2K/DIV2K800_sub_bicLRx4.lmdb'
-        opt['name'] = 'DIV2K800_sub_bicLRx4'
+        opt['img_folder'] = '../../datasets/disp_high_train_mod_sub'
+        opt['lmdb_save_path'] = '../../datasets/disp_high_train_mod_sub.lmdb'
+        opt['name'] = 'disp_high_train_mod_sub'
+        general_image_folder(opt)
+    elif dataset == 'disp_low':
+        opt = {}
+        ## GT
+        opt['img_folder'] = '../../datasets/disp_low_train_sub'
+        opt['lmdb_save_path'] = '../../datasets/disp_low_train_sub.lmdb'
+        opt['name'] = 'disp_low_train_sub'
+        general_image_folder(opt)
+        ## LR
+        opt['img_folder'] = '../../datasets/DIV2K/disp_low_train_mod_sub'
+        opt['lmdb_save_path'] = '../../datasets/DIV2K/disp_low_train_mod_sub.lmdb'
+        opt['name'] = 'disp_low_train_mod_sub'
+        general_image_folder(opt)
+    elif dataset == 'spec':
+        opt = {}
+        ## GT
+        opt['img_folder'] = '../../datasets/spec_train_sub'
+        opt['lmdb_save_path'] = '../../datasets/spec_train_sub.lmdb'
+        opt['name'] = 'spec_train_sub'
+        general_image_folder(opt)
+        ## LR
+        opt['img_folder'] = '../../datasets/spec_train_mod_sub'
+        opt['lmdb_save_path'] = '../../datasets/spec_train_mod_sub.lmdb'
+        opt['name'] = 'spec_train_mod_sub'
         general_image_folder(opt)
     elif dataset == 'test':
-        test_lmdb('../../datasets/REDS/train_sharp_wval.lmdb', 'REDS')
+        test_lmdb('../../datasets/disp_high_train_sub.lmdb', 'disp_high_train_sub')
 
 
 def read_image_worker(path, key):
@@ -401,10 +425,10 @@ def test_lmdb(dataroot, dataset='REDS'):
     print('Reading {} for test.'.format(key))
     with env.begin(write=False) as txn:
         buf = txn.get(key.encode('ascii'))
-    img_flat = np.frombuffer(buf, dtype=np.uint8)
+    img_flat = np.frombuffer(buf, dtype=np.float32)
     C, H, W = [int(s) for s in meta_info['resolution'].split('_')]
     img = img_flat.reshape(H, W, C)
-    cv2.imwrite('test.png', img)
+    cv2.imwrite('test.exr', img, [cv2.IMWRITE_EXR_TYPE, cv2.IMWRITE_EXR_TYPE_FLOAT])
 
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@ import cv2
 ####################
 
 ###################### get image path list ######################
-IMG_EXTENSIONS = ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP']
+IMG_EXTENSIONS = ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP', '.exr']
 
 
 def is_image_file(filename):
@@ -66,7 +66,7 @@ def _read_img_lmdb(env, key, size):
     size: (C, H, W) tuple"""
     with env.begin(write=False) as txn:
         buf = txn.get(key.encode('ascii'))
-    img_flat = np.frombuffer(buf, dtype=np.uint8)
+    img_flat = np.frombuffer(buf, dtype=np.float32)
     C, H, W = size
     img = img_flat.reshape(H, W, C)
     return img
@@ -74,12 +74,13 @@ def _read_img_lmdb(env, key, size):
 
 def read_img(env, path, size=None):
     """read image by cv2 or from lmdb
-    return: Numpy float32, HWC, BGR, [0,1]"""
+    #return: Numpy float32, HWC, BGR, [0,1]
+    return: Numpy float32, HWC, BGR, as is"""
     if env is None:  # img
         img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
     else:
         img = _read_img_lmdb(env, path, size)
-    img = img.astype(np.float32) / 255.
+    img = img.astype(np.float32) #/ 255.
     if img.ndim == 2:
         img = np.expand_dims(img, axis=2)
     # some images have 4 channels
@@ -381,7 +382,10 @@ def calculate_weights_indices(in_length, out_length, scale, kernel, kernel_width
     indices = indices + sym_len_s - 1
     return weights, indices, int(sym_len_s), int(sym_len_e)
 
+def imresize(img, scale, antialiasing=True):
+    return cv2.resize(img, (0, 0), fx=scale, fy=scale)
 
+'''
 def imresize(img, scale, antialiasing=True):
     # Now the scale should be the same for H and W
     # input: img: CHW RGB [0,1]
@@ -449,8 +453,12 @@ def imresize(img, scale, antialiasing=True):
         out_2[2, :, i] = out_1_aug[2, :, idx:idx + kernel_width].mv(weights_W[i])
 
     return out_2
+'''
 
+def imresize_np(img, scale, antialiasing=True):
+    return cv2.resize(img, (0, 0), fx=scale, fy=scale)
 
+'''
 def imresize_np(img, scale, antialiasing=True):
     # Now the scale should be the same for H and W
     # input: img: Numpy, HWC BGR [0,1]
@@ -519,7 +527,7 @@ def imresize_np(img, scale, antialiasing=True):
         out_2[:, i, 2] = out_1_aug[:, idx:idx + kernel_width, 2].mv(weights_W[i])
 
     return out_2.numpy()
-
+'''
 
 if __name__ == '__main__':
     # test imresize function
