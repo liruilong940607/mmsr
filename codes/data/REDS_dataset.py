@@ -31,6 +31,7 @@ class REDSDataset(data.Dataset):
 
     def __init__(self, opt):
         super(REDSDataset, self).__init__()
+        assert False
         self.opt = opt
         # temporal augmentation
         self.interval_list = opt['interval_list']
