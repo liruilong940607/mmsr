@@ -28,6 +28,7 @@ class Vimeo90KDataset(data.Dataset):
     '''
 
     def __init__(self, opt):
+        assert False
         super(Vimeo90KDataset, self).__init__()
         self.opt = opt
         # temporal augmentation
