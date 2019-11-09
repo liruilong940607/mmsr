@@ -218,12 +218,15 @@ def augment_flow(img_list, flow_list, hflip=True, rot=True):
 def channel_convert(in_c, tar_type, img_list):
     """conversion among BGR, gray and y"""
     if in_c == 3 and tar_type == 'gray':  # BGR to gray
+        assert False
         gray_list = [cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) for img in img_list]
         return [np.expand_dims(img, axis=2) for img in gray_list]
     elif in_c == 3 and tar_type == 'y':  # BGR to y
+        assert False
         y_list = [bgr2ycbcr(img, only_y=True) for img in img_list]
         return [np.expand_dims(img, axis=2) for img in y_list]
     elif in_c == 1 and tar_type == 'RGB':  # gray/y to BGR
+        assert False
         return [cv2.cvtColor(img, cv2.COLOR_GRAY2BGR) for img in img_list]
     else:
         return img_list
@@ -236,6 +239,7 @@ def rgb2ycbcr(img, only_y=True):
         uint8, [0, 255]
         float, [0, 1]
     """
+    assert False
     in_img_type = img.dtype
     img.astype(np.float32)
     if in_img_type != np.uint8:
@@ -260,6 +264,7 @@ def bgr2ycbcr(img, only_y=True):
         uint8, [0, 255]
         float, [0, 1]
     """
+    assert False
     in_img_type = img.dtype
     img.astype(np.float32)
     if in_img_type != np.uint8:
@@ -283,6 +288,7 @@ def ycbcr2rgb(img):
         uint8, [0, 255]
         float, [0, 1]
     """
+    assert False
     in_img_type = img.dtype
     img.astype(np.float32)
     if in_img_type != np.uint8:
@@ -320,6 +326,7 @@ def modcrop(img_in, scale):
 
 # matlab 'imresize' function, now only support 'bicubic'
 def cubic(x):
+    assert False
     absx = torch.abs(x)
     absx2 = absx**2
     absx3 = absx**3
@@ -329,6 +336,7 @@ def cubic(x):
 
 
 def calculate_weights_indices(in_length, out_length, scale, kernel, kernel_width, antialiasing):
+    assert False
     if (scale < 1) and (antialiasing):
         # Use a modified kernel to simultaneously interpolate and antialias- larger kernel width
         kernel_width = kernel_width / scale
@@ -532,6 +540,7 @@ def imresize_np(img, scale, antialiasing=True):
 if __name__ == '__main__':
     # test imresize function
     # read images
+    assert False
     img = cv2.imread('test.png')
     img = img * 1.0 / 255
     img = torch.from_numpy(np.transpose(img[:, :, [2, 1, 0]], (2, 0, 1))).float()
