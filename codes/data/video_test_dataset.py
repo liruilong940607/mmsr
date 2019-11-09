@@ -16,6 +16,7 @@ class VideoTestDataset(data.Dataset):
 
     def __init__(self, opt):
         super(VideoTestDataset, self).__init__()
+        assert False
         self.opt = opt
         self.cache_data = opt['cache_data']
         self.half_N_frames = opt['N_frames'] // 2
