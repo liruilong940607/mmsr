@@ -14,7 +14,7 @@ def generate_mod_LR_bic():
     # set parameters
     up_scale = 4
     mod_scale = 4
-    mode = "disp_high_train"
+    mode = "spec_train"
     # set data dir
     # sourcedir = '/data/datasets/img'
     # savedir = '/data/datasets/mod'

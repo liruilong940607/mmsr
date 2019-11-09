@@ -1,31 +1,31 @@
 #### general settings
-name: 003_RRDB_ESRGANx4_DIV2K
+name: 002_RRDB_ESRGANx4_disp_low
 use_tb_logger: true
 model: srgan
 distortion: sr
 scale: 4
-gpu_ids: [2]
+gpu_ids: [6,7]
 
 #### datasets
 datasets:
   train:
-    name: DIV2K
+    name: disp_low_train
     mode: LQGT
-    dataroot_GT: ../datasets/DIV2K/DIV2K800_sub.lmdb
-    dataroot_LQ: ../datasets/DIV2K/DIV2K800_sub_bicLRx4.lmdb
+    dataroot_GT: ../datasets/disp_low_train_sub.lmdb
+    dataroot_LQ: ../datasets/disp_low_train_mod_sub.lmdb
 
     use_shuffle: true
     n_workers: 6  # per GPU
     batch_size: 16
     GT_size: 128
     use_flip: true
-    use_rot: true
+    use_rot: false
     color: EXR # no channel_convert
   val:
-    name: val_set14
+    name: disp_low_val
     mode: LQGT
-    dataroot_GT: ../datasets/val_set14/Set14
-    dataroot_LQ: ../datasets/val_set14/Set14_bicLRx4
+    dataroot_GT: ../datasets/disp_low_val_sub
+    dataroot_LQ: ../datasets/disp_low_val_mod_sub
 
 #### network structures
 network_G:
