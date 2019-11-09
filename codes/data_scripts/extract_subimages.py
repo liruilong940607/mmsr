@@ -14,7 +14,7 @@ import data.util as data_util  # noqa: E402
 def main():
     mode = 'pair'  # single (one input folder) | pair (extract corresponding GT and LR pairs)
     opt = {}
-    opt['n_thread'] = 32
+    opt['n_thread'] = 4
     opt['compression_level'] = 0  # 3 is the default value in cv2
     # CV_IMWRITE_PNG_COMPRESSION from 0 to 9. A higher value means a smaller size and longer
     # compression time. If read raw images during training, use 0 for faster IO speed.
@@ -26,20 +26,20 @@ def main():
         opt['thres_sz'] = 48  # size threshold
         extract_signle(opt)
     elif mode == 'pair':
-        GT_folder = '../../datasets/disp_high_train'
-        LR_folder = '../../datasets/disp_high_train_mod'
-        save_GT_folder = '../../datasets/disp_high_train_sub'
-        save_LR_folder = '../../datasets/disp_high_train_mod_sub'
+#         GT_folder = '../../datasets/disp_high_train_mod/HR'
+#         LR_folder = '../../datasets/disp_high_train_mod/LR'
+#         save_GT_folder = '../../datasets/disp_high_train_mod/HR_sub'
+#         save_LR_folder = '../../datasets/disp_high_train_mod/LR_sub'
         
-#         GT_folder = '../../datasets/disp_low_train'
-#         LR_folder = '../../datasets/disp_low_train_mod'
-#         save_GT_folder = '../../datasets/disp_low_train_sub'
-#         save_LR_folder = '../../datasets/disp_low_train_mod_sub'
+#         GT_folder = '../../datasets/disp_low_train_mod/HR'
+#         LR_folder = '../../datasets/disp_low_train_mod/LR'
+#         save_GT_folder = '../../datasets/disp_low_train_mod/HR_sub'
+#         save_LR_folder = '../../datasets/disp_low_train_mod/LR_sub'
         
-#         GT_folder = '../../datasets/spec_train'
-#         LR_folder = '../../datasets/spec_train_mod'
-#         save_GT_folder = '../../datasets/spec_train_sub'
-#         save_LR_folder = '../../datasets/spec_train_mod_sub'
+        GT_folder = '../../datasets/spec_train_mod/HR'
+        LR_folder = '../../datasets/spec_train_mod/LR'
+        save_GT_folder = '../../datasets/spec_train_mod/HR_sub'
+        save_LR_folder = '../../datasets/spec_train_mod/LR_sub'
         
         scale_ratio = 4
         crop_sz = 480  # the size of each sub-image (GT)
@@ -95,7 +95,7 @@ def extract_signle(opt):
         print('mkdir [{:s}] ...'.format(save_folder))
     else:
         print('Folder [{:s}] already exists. Exit...'.format(save_folder))
-        sys.exit(1)
+        # sys.exit(1)
     img_list = data_util._get_paths_from_images(input_folder)
 
     def update(arg):

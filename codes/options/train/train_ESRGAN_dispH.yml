@@ -11,8 +11,7 @@ datasets:
   train:
     name: disp_high_train
     mode: LQGT
-    dataroot_GT: ../datasets/disp_high_train_sub.lmdb
-    dataroot_LQ: ../datasets/disp_high_train_mod_sub.lmdb
+    dataroot_GT: ../datasets/disp_high_train
 
     use_shuffle: true
     n_workers: 6  # per GPU
@@ -24,8 +23,7 @@ datasets:
   val:
     name: disp_high_val
     mode: LQGT
-    dataroot_GT: ../datasets/disp_high_val_sub
-    dataroot_LQ: ../datasets/disp_high_val_mod_sub
+    dataroot_GT: ../datasets/disp_high_val
 
 #### network structures
 network_G:

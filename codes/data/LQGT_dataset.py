@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import cv2
+import tqdm
 import lmdb
 import torch
 import torch.utils.data as data
@@ -20,9 +21,9 @@ class LQGTDataset(data.Dataset):
         self.paths_LQ, self.paths_GT = None, None
         self.sizes_LQ, self.sizes_GT = None, None
         self.LQ_env, self.GT_env = None, None  # environments for lmdb
-
+        self.GT_env = None
+        
         self.paths_GT, self.sizes_GT = util.get_image_paths(self.data_type, opt['dataroot_GT'])
-        self.paths_LQ, self.sizes_LQ = util.get_image_paths(self.data_type, opt['dataroot_LQ'])
         assert self.paths_GT, 'Error: GT path is empty.'
         if self.paths_LQ and self.paths_GT:
             assert len(self.paths_LQ) == len(
@@ -38,18 +39,34 @@ class LQGTDataset(data.Dataset):
         self.LQ_env = lmdb.open(self.opt['dataroot_LQ'], readonly=True, lock=False, readahead=False,
                                 meminit=False)
 
+    def _init_imgs(self):
+        print ("[initialize] loading all images]")
+        self.GT_cache = []
+        for GT_path in tqdm(self.paths_GT[0:5]):
+            self.GT_cache.append(cv2.imread(GT_path, cv2.IMREAD_UNCHANGED))
+    
+    def random_crop(self, img):
+        H, W, C = img.shape
+        y0 = random.randint(0, H-self.opt['GT_size'])
+        x0 = random.randint(0, W-self.opt['GT_size'])
+        return img[y0:y0+self.opt['GT_size'], x0:x0+self.opt['GT_size'], :]
+    
     def __getitem__(self, index):
         if self.data_type == 'lmdb' and (self.GT_env is None or self.LQ_env is None):
             self._init_lmdb()
+        elif self.data_type == 'img' and (self.GT_cache is None):
+            self._init_imgs()
+                                 
         GT_path, LQ_path = None, None
         scale = self.opt['scale']
         GT_size = self.opt['GT_size']
 
         # get GT image
-        GT_path = self.paths_GT[index]
+        # GT_path = self.paths_GT[index]
         resolution = [int(s) for s in self.sizes_GT[index].split('_')
                       ] if self.data_type == 'lmdb' else None
-        img_GT = util.read_img(self.GT_env, GT_path, resolution)
+        # img_GT = util.read_img(self.GT_env, GT_path, resolution)
+        img_GT = self.random_crop(self.GT_cache[index])
         if self.opt['phase'] != 'train':  # modcrop in the validation / test phase
             img_GT = util.modcrop(img_GT, scale)
         if self.opt['color']:  # change color space if necessary

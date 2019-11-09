@@ -15,7 +15,7 @@ import utils.util as util  # noqa: E402
 
 
 def main():
-    dataset = 'disp_high'  # vimeo90K | REDS | general (e.g., DIV2K, 291) | DIV2K_demo |test
+    dataset = 'disp_low'  # vimeo90K | REDS | general (e.g., DIV2K, 291) | DIV2K_demo |test
     mode = 'GT'  # used for vimeo90k and REDS datasets
     # vimeo90k: GT | LR | flow
     # REDS: train_sharp, train_sharp_bicubic, train_blur_bicubic, train_blur, train_blur_comp
@@ -33,41 +33,41 @@ def main():
     elif dataset == 'disp_high':
         opt = {}
         ## GT
-        opt['img_folder'] = '../../datasets/disp_high_train_sub'
-        opt['lmdb_save_path'] = '../../datasets/disp_high_train_sub.lmdb'
-        opt['name'] = 'disp_high_train_sub'
+        opt['img_folder'] = '../../datasets/disp_high_train_mod/HR_sub'
+        opt['lmdb_save_path'] = '../../datasets/disp_high_train_mod/HR_sub.lmdb'
+        opt['name'] = 'disp_high_HR'
         general_image_folder(opt)
         ## LR
-        opt['img_folder'] = '../../datasets/disp_high_train_mod_sub'
-        opt['lmdb_save_path'] = '../../datasets/disp_high_train_mod_sub.lmdb'
-        opt['name'] = 'disp_high_train_mod_sub'
+        opt['img_folder'] = '../../datasets/disp_high_train_mod/LR_sub'
+        opt['lmdb_save_path'] = '../../datasets/disp_high_train_mod/LR_sub.lmdb'
+        opt['name'] = 'disp_high_LR'
         general_image_folder(opt)
     elif dataset == 'disp_low':
         opt = {}
         ## GT
-        opt['img_folder'] = '../../datasets/disp_low_train_sub'
-        opt['lmdb_save_path'] = '../../datasets/disp_low_train_sub.lmdb'
-        opt['name'] = 'disp_low_train_sub'
+        opt['img_folder'] = '../../datasets/disp_low_train_mod/HR_sub'
+        opt['lmdb_save_path'] = '../../datasets/disp_low_train_mod/HR_sub.lmdb'
+        opt['name'] = 'disp_low_HR'
         general_image_folder(opt)
         ## LR
-        opt['img_folder'] = '../../datasets/DIV2K/disp_low_train_mod_sub'
-        opt['lmdb_save_path'] = '../../datasets/DIV2K/disp_low_train_mod_sub.lmdb'
-        opt['name'] = 'disp_low_train_mod_sub'
+        opt['img_folder'] = '../../datasets/disp_low_train_mod/LR_sub'
+        opt['lmdb_save_path'] = '../../datasets/disp_low_train_mod/LR_sub.lmdb'
+        opt['name'] = 'disp_low_LR'
         general_image_folder(opt)
     elif dataset == 'spec':
         opt = {}
         ## GT
-        opt['img_folder'] = '../../datasets/spec_train_sub'
-        opt['lmdb_save_path'] = '../../datasets/spec_train_sub.lmdb'
-        opt['name'] = 'spec_train_sub'
+        opt['img_folder'] = '../../datasets/spec_train_mod/HR_sub'
+        opt['lmdb_save_path'] = '../../datasets/spec_train_mod/HR_sub.lmdb'
+        opt['name'] = 'spec_HR'
         general_image_folder(opt)
         ## LR
-        opt['img_folder'] = '../../datasets/spec_train_mod_sub'
-        opt['lmdb_save_path'] = '../../datasets/spec_train_mod_sub.lmdb'
-        opt['name'] = 'spec_train_mod_sub'
+        opt['img_folder'] = '../../datasets/spec_train_mod/LR_sub'
+        opt['lmdb_save_path'] = '../../datasets/spec_train_mod/LR_sub.lmdb'
+        opt['name'] = 'spec_LR'
         general_image_folder(opt)
     elif dataset == 'test':
-        test_lmdb('../../datasets/disp_high_train_sub.lmdb', 'disp_high_train_sub')
+        test_lmdb('../../datasets/disp_high_train_mod/HR_sub.lmdb', 'disp_high_HR')
 
 
 def read_image_worker(path, key):
@@ -84,8 +84,8 @@ def general_image_folder(opt):
     #### configurations
     read_all_imgs = False  # whether real all images to memory with multiprocessing
     # Set False for use limited memory
-    BATCH = 5000  # After BATCH images, lmdb commits, if read_all_imgs = False
-    n_thread = 40
+    BATCH = 10000  # After BATCH images, lmdb commits, if read_all_imgs = False
+    n_thread = 2
     ########################################################
     img_folder = opt['img_folder']
     lmdb_save_path = opt['lmdb_save_path']
@@ -94,7 +94,7 @@ def general_image_folder(opt):
         raise ValueError("lmdb_save_path must end with \'lmdb\'.")
     if osp.exists(lmdb_save_path):
         print('Folder [{:s}] already exists. Exit...'.format(lmdb_save_path))
-        sys.exit(1)
+        # sys.exit(1)
 
     #### read all the image paths to a list
     print('Reading image path list ...')
