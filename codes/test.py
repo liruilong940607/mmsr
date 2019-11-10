@@ -55,14 +55,14 @@ for test_loader in test_loaders:
         model.test()
         visuals = model.get_current_visuals(need_GT=need_GT)
 
-        sr_img = util.tensor2img(visuals['rlt'])  # uint8
+        sr_img = util.tensor2img(visuals['rlt'])  # float32
 
         # save images
         suffix = opt['suffix']
         if suffix:
-            save_img_path = osp.join(dataset_dir, img_name + suffix + '.png')
+            save_img_path = osp.join(dataset_dir, img_name + suffix + '.exr')
         else:
-            save_img_path = osp.join(dataset_dir, img_name + '.png')
+            save_img_path = osp.join(dataset_dir, img_name + '.exr')
         util.save_img(sr_img, save_img_path)
 
         # calculate PSNR and SSIM
@@ -73,20 +73,7 @@ for test_loader in test_loaders:
             ssim = util.calculate_ssim(sr_img, gt_img)
             test_results['psnr'].append(psnr)
             test_results['ssim'].append(ssim)
-
-            if gt_img.shape[2] == 3:  # RGB image
-                sr_img_y = bgr2ycbcr(sr_img / 255., only_y=True)
-                gt_img_y = bgr2ycbcr(gt_img / 255., only_y=True)
-
-                psnr_y = util.calculate_psnr(sr_img_y * 255, gt_img_y * 255)
-                ssim_y = util.calculate_ssim(sr_img_y * 255, gt_img_y * 255)
-                test_results['psnr_y'].append(psnr_y)
-                test_results['ssim_y'].append(ssim_y)
-                logger.info(
-                    '{:20s} - PSNR: {:.6f} dB; SSIM: {:.6f}; PSNR_Y: {:.6f} dB; SSIM_Y: {:.6f}.'.
-                    format(img_name, psnr, ssim, psnr_y, ssim_y))
-            else:
-                logger.info('{:20s} - PSNR: {:.6f} dB; SSIM: {:.6f}.'.format(img_name, psnr, ssim))
+            logger.info('{:20s} - PSNR: {:.6f} dB; SSIM: {:.6f}.'.format(img_name, psnr, ssim))
         else:
             logger.info(img_name)
 

@@ -10,6 +10,7 @@ import glob
 
 
 def main():
+    assert False
     # Configurations
 
     # GT - Ground-truth;

@@ -12,7 +12,7 @@ import cv2
 ####################
 
 ###################### get image path list ######################
-IMG_EXTENSIONS = ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP']
+IMG_EXTENSIONS = ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP', '.exr']
 
 
 def is_image_file(filename):
@@ -62,6 +62,7 @@ def glob_file_list(root):
 
 ###################### read images ######################
 def _read_img_lmdb(env, key, size):
+    assert False
     """read image from lmdb with key (w/ and w/o fixed size)
     size: (C, H, W) tuple"""
     with env.begin(write=False) as txn:
@@ -79,7 +80,7 @@ def read_img(env, path, size=None):
         img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
     else:
         img = _read_img_lmdb(env, path, size)
-    img = img.astype(np.float32) / 255.
+    img = img.astype(np.float32) # / 255.
     if img.ndim == 2:
         img = np.expand_dims(img, axis=2)
     # some images have 4 channels
@@ -217,12 +218,15 @@ def augment_flow(img_list, flow_list, hflip=True, rot=True):
 def channel_convert(in_c, tar_type, img_list):
     """conversion among BGR, gray and y"""
     if in_c == 3 and tar_type == 'gray':  # BGR to gray
+        assert False
         gray_list = [cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) for img in img_list]
         return [np.expand_dims(img, axis=2) for img in gray_list]
     elif in_c == 3 and tar_type == 'y':  # BGR to y
+        assert False
         y_list = [bgr2ycbcr(img, only_y=True) for img in img_list]
         return [np.expand_dims(img, axis=2) for img in y_list]
     elif in_c == 1 and tar_type == 'RGB':  # gray/y to BGR
+        assert False
         return [cv2.cvtColor(img, cv2.COLOR_GRAY2BGR) for img in img_list]
     else:
         return img_list
@@ -235,6 +239,7 @@ def rgb2ycbcr(img, only_y=True):
         uint8, [0, 255]
         float, [0, 1]
     """
+    assert False
     in_img_type = img.dtype
     img.astype(np.float32)
     if in_img_type != np.uint8:
@@ -259,6 +264,7 @@ def bgr2ycbcr(img, only_y=True):
         uint8, [0, 255]
         float, [0, 1]
     """
+    assert False
     in_img_type = img.dtype
     img.astype(np.float32)
     if in_img_type != np.uint8:
@@ -282,6 +288,7 @@ def ycbcr2rgb(img):
         uint8, [0, 255]
         float, [0, 1]
     """
+    assert False
     in_img_type = img.dtype
     img.astype(np.float32)
     if in_img_type != np.uint8:
@@ -319,6 +326,7 @@ def modcrop(img_in, scale):
 
 # matlab 'imresize' function, now only support 'bicubic'
 def cubic(x):
+    assert False
     absx = torch.abs(x)
     absx2 = absx**2
     absx3 = absx**3
@@ -328,6 +336,7 @@ def cubic(x):
 
 
 def calculate_weights_indices(in_length, out_length, scale, kernel, kernel_width, antialiasing):
+    assert False
     if (scale < 1) and (antialiasing):
         # Use a modified kernel to simultaneously interpolate and antialias- larger kernel width
         kernel_width = kernel_width / scale
@@ -383,6 +392,8 @@ def calculate_weights_indices(in_length, out_length, scale, kernel, kernel_width
 
 
 def imresize(img, scale, antialiasing=True):
+    return cv2.resize(img, (0, 0), fx=scale, fy=scale)
+    
     # Now the scale should be the same for H and W
     # input: img: CHW RGB [0,1]
     # output: CHW RGB [0,1] w/o round
@@ -452,6 +463,8 @@ def imresize(img, scale, antialiasing=True):
 
 
 def imresize_np(img, scale, antialiasing=True):
+    return cv2.resize(img, (0, 0), fx=scale, fy=scale)
+
     # Now the scale should be the same for H and W
     # input: img: Numpy, HWC BGR [0,1]
     # output: HWC BGR [0,1] w/o round
@@ -522,6 +535,8 @@ def imresize_np(img, scale, antialiasing=True):
 
 
 if __name__ == '__main__':
+    assert False
+    
     # test imresize function
     # read images
     img = cv2.imread('test.png')

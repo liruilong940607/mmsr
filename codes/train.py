@@ -179,6 +179,7 @@ def main():
                     pbar = util.ProgressBar(len(val_loader))
                     avg_psnr = 0.
                     idx = 0
+                    torch.cuda.empty_cache()
                     for val_data in val_loader:
                         idx += 1
                         img_name = os.path.splitext(os.path.basename(val_data['LQ_path'][0]))[0]
@@ -194,7 +195,7 @@ def main():
 
                         # Save SR images for reference
                         save_img_path = os.path.join(img_dir,
-                                                     '{:s}_{:d}.png'.format(img_name, current_step))
+                                                     '{:s}_{:d}.exr'.format(img_name, current_step))
                         util.save_img(sr_img, save_img_path)
 
                         # calculate PSNR

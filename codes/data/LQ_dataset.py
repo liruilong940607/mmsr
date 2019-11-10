@@ -1,6 +1,7 @@
 import numpy as np
 import lmdb
 import torch
+import tqdm
 import torch.utils.data as data
 import data.util as util
 
@@ -14,23 +15,36 @@ class LQDataset(data.Dataset):
         self.data_type = self.opt['data_type']
         self.paths_LQ, self.paths_GT = None, None
         self.LQ_env = None  # environment for lmdb
+        self.LQ_cache = None
 
         self.paths_LQ, self.sizes_LQ = util.get_image_paths(self.data_type, opt['dataroot_LQ'])
         assert self.paths_LQ, 'Error: LQ paths are empty.'
 
+#         self._init_cache()
+        
     def _init_lmdb(self):
         self.LQ_env = lmdb.open(self.opt['dataroot_LQ'], readonly=True, lock=False, readahead=False,
                                 meminit=False)
 
+#     def _init_cache(self):
+#         print ("[init] loading full training dataset ...")
+#         self.LQ_cache = []
+#         for LQ_path in tqdm.tqdm(self.paths_LQ):
+#             self.LQ_cache.append(util.read_img(None, LQ_path))
+        
     def __getitem__(self, index):
         if self.data_type == 'lmdb' and self.LQ_env is None:
             self._init_lmdb()
+#         elif self.LQ_cache is None:
+#             self._init_cache()
+            
         LQ_path = None
 
         # get LQ image
         LQ_path = self.paths_LQ[index]
         resolution = [int(s) for s in self.sizes_LQ[index].split('_')
                       ] if self.data_type == 'lmdb' else None
+#         img_LQ = self.LQ_cache[index]
         img_LQ = util.read_img(self.LQ_env, LQ_path, resolution)
         H, W, C = img_LQ.shape
 

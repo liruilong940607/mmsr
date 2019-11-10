@@ -2,6 +2,7 @@ import random
 import numpy as np
 import cv2
 import lmdb
+import tqdm
 import torch
 import torch.utils.data as data
 import data.util as util
@@ -20,9 +21,10 @@ class LQGTDataset(data.Dataset):
         self.paths_LQ, self.paths_GT = None, None
         self.sizes_LQ, self.sizes_GT = None, None
         self.LQ_env, self.GT_env = None, None  # environments for lmdb
+        self.GT_cache = None
 
         self.paths_GT, self.sizes_GT = util.get_image_paths(self.data_type, opt['dataroot_GT'])
-        self.paths_LQ, self.sizes_LQ = util.get_image_paths(self.data_type, opt['dataroot_LQ'])
+        # self.paths_LQ, self.sizes_LQ = util.get_image_paths(self.data_type, opt['dataroot_LQ'])
         assert self.paths_GT, 'Error: GT path is empty.'
         if self.paths_LQ and self.paths_GT:
             assert len(self.paths_LQ) == len(
@@ -30,6 +32,8 @@ class LQGTDataset(data.Dataset):
             ), 'GT and LQ datasets have different number of images - {}, {}.'.format(
                 len(self.paths_LQ), len(self.paths_GT))
         self.random_scale_list = [1]
+        
+#         self._init_cache()
 
     def _init_lmdb(self):
         # https://github.com/chainer/chainermn/issues/129
@@ -37,10 +41,25 @@ class LQGTDataset(data.Dataset):
                                 meminit=False)
         self.LQ_env = lmdb.open(self.opt['dataroot_LQ'], readonly=True, lock=False, readahead=False,
                                 meminit=False)
-
+        
+#     def _init_cache(self):
+#         print ("[init] loading full training dataset ...")
+#         self.GT_cache = []
+#         for LQ_path in tqdm.tqdm(self.paths_GT):
+#             self.GT_cache.append(util.read_img(None, LQ_path))
+        
+    def random_crop(self, img, size):
+        H, W, C = img.shape
+        y0 = random.randint(0, H-size)
+        x0 = random.randint(0, W-size)
+        return img[y0:y0+size, x0:x0+size, :]
+        
     def __getitem__(self, index):
         if self.data_type == 'lmdb' and (self.GT_env is None or self.LQ_env is None):
             self._init_lmdb()
+#         elif self.GT_cache is None:
+#             self._init_cache()
+            
         GT_path, LQ_path = None, None
         scale = self.opt['scale']
         GT_size = self.opt['GT_size']
@@ -49,7 +68,12 @@ class LQGTDataset(data.Dataset):
         GT_path = self.paths_GT[index]
         resolution = [int(s) for s in self.sizes_GT[index].split('_')
                       ] if self.data_type == 'lmdb' else None
+        
+#         assert self.GT_cache is not None
+#         img_GT = self.GT_cache[index]
+#         img_GT = self.random_crop(img_GT, GT_size)
         img_GT = util.read_img(self.GT_env, GT_path, resolution)
+        img_GT = self.random_crop(img_GT, GT_size)
         if self.opt['phase'] != 'train':  # modcrop in the validation / test phase
             img_GT = util.modcrop(img_GT, scale)
         if self.opt['color']:  # change color space if necessary
