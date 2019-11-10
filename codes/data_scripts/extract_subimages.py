@@ -14,7 +14,7 @@ import data.util as data_util  # noqa: E402
 def main():
     mode = 'single'  # single (one input folder) | pair (extract corresponding GT and LR pairs)
     opt = {}
-    opt['n_thread'] = 2
+    opt['n_thread'] = 4
     opt['compression_level'] = 0  # 3 is the default value in cv2
     # CV_IMWRITE_PNG_COMPRESSION from 0 to 9. A higher value means a smaller size and longer
     # compression time. If read raw images during training, use 0 for faster IO speed.

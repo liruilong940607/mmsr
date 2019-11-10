@@ -77,10 +77,24 @@ def read_img(env, path, size=None):
     """read image by cv2 or from lmdb
     return: Numpy float32, HWC, BGR, [0,1]"""
     if env is None:  # img
-        #disp high
         img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
-        mean = np.array([-0.00019921, -0.00019921, -0.00019921]).astype("float32")
-        std = np.array([0.03625935, 0.03625935, 0.03625935]).astype("float32")
+        if 'disph' in path:
+            mean = np.array([-5.6566824e-07, -5.6566824e-07, -5.6566824e-07]).astype("float32")
+            std = np.array([0.00336712, 0.00336712, 0.00336712]).astype("float32")
+        elif 'displ' in path:
+            mean = np.array([-0.00019921, -0.00019921, -0.00019921]).astype("float32")
+            std = np.array([0.03625935, 0.03625935, 0.03625935]).astype("float32")
+        elif 'dispAll' in path:
+            mean = np.array([-0.00019921, -0.00019921, -0.00019921]).astype("float32")
+            std = np.array([0.03625935, 0.03625935, 0.03625935]).astype("float32")
+        elif 'spec' in path:
+            mean = np.array([0.1474461, 0.1474461, 0.1474461]).astype("float32")
+            std = np.array([0.27835602, 0.27835602, 0.27835602]).astype("float32")
+        elif 'albe' in path:
+            mean = np.array([0.03996306, 0.07294353, 0.0922085]).astype("float32")
+            std = np.array([0.07891982, 0.08981047, 0.1882349]).astype("float32")
+        else:
+            assert False
         img = (img - mean) / std
     else:
         img = _read_img_lmdb(env, path, size)
