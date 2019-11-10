@@ -79,8 +79,8 @@ def read_img(env, path, size=None):
     if env is None:  # img
         #disp high
         img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
-        mean = np.array([-5.6566824e-07, -5.6566824e-07, -5.6566824e-07]).astype("float32")
-        std = np.array([0.00336712, 0.00336712, 0.00336712]).astype("float32")
+        mean = np.array([-0.00019921, -0.00019921, -0.00019921]).astype("float32")
+        std = np.array([0.03625935, 0.03625935, 0.03625935]).astype("float32")
         img = (img - mean) / std
     else:
         img = _read_img_lmdb(env, path, size)
