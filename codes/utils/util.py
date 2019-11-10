@@ -134,6 +134,10 @@ def tensor2img(tensor, out_type=np.float32, min_max=None):
 
 
 def save_img(img, img_path, mode='EXR'):
+    #disp high
+    mean = np.array([-5.6566824e-07, -5.6566824e-07, -5.6566824e-07]).astype("float32")
+    std = np.array([0.00336712, 0.00336712, 0.00336712]).astype("float32")
+    img = img * std + mean
     cv2.imwrite(img_path, img, [cv2.IMWRITE_EXR_TYPE, cv2.IMWRITE_EXR_TYPE_FLOAT])
 
 

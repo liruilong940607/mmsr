@@ -197,6 +197,10 @@ def main():
                         save_img_path = os.path.join(img_dir,
                                                      '{:s}_{:d}.exr'.format(img_name, current_step))
                         util.save_img(sr_img, save_img_path)
+                        
+                        save_img_path = os.path.join(img_dir,
+                                                     '{:s}_{:d}_gt.exr'.format(img_name, current_step))
+                        util.save_img(gt_img, save_img_path)
 
                         # calculate PSNR
                         sr_img, gt_img = util.crop_border([sr_img, gt_img], opt['scale'])
