@@ -108,7 +108,7 @@ class LQGTDataset(data.Dataset):
 
             H, W, _ = img_GT.shape
             # using matlab imresize
-            alpha = random.choice([1, 2, 4])
+            alpha = random.choice([1, 2])
             img_LQ = util.imresize_np(img_GT, 1 / alpha / scale, True)
             img_LQ = util.imresize_np(img_LQ, alpha, True)
             if img_LQ.ndim == 2:

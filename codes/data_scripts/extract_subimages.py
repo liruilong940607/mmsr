@@ -14,13 +14,13 @@ import data.util as data_util  # noqa: E402
 def main():
     mode = 'single'  # single (one input folder) | pair (extract corresponding GT and LR pairs)
     opt = {}
-    opt['n_thread'] = 4
+    opt['n_thread'] = 2
     opt['compression_level'] = 0  # 3 is the default value in cv2
     # CV_IMWRITE_PNG_COMPRESSION from 0 to 9. A higher value means a smaller size and longer
     # compression time. If read raw images during training, use 0 for faster IO speed.
     if mode == 'single':
-        opt['input_folder'] = '../../datasets/albedo_train'
-        opt['save_folder'] = '../../datasets/albedo_train_sub'
+        opt['input_folder'] = '../../datasets/displ_train'
+        opt['save_folder'] = '../../datasets/displ_train_sub'
         opt['crop_sz'] = 480  # the size of each sub-image
         opt['step'] = 240  # step of the sliding crop window
         opt['thres_sz'] = 48  # size threshold
@@ -132,7 +132,7 @@ def worker(path, opt):
             crop_img = np.ascontiguousarray(crop_img)
             cv2.imwrite(
                 osp.join(opt['save_folder'],
-                         img_name.replace('.png', '_s{:03d}.exr'.format(index))), crop_img,
+                         img_name.replace('.exr', '_s{:03d}.exr'.format(index))), crop_img,
                 [cv2.IMWRITE_EXR_TYPE, cv2.IMWRITE_EXR_TYPE_FLOAT])
     return 'Processing {:s} ...'.format(img_name)
 
