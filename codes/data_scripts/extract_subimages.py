@@ -19,8 +19,8 @@ def main():
     # CV_IMWRITE_PNG_COMPRESSION from 0 to 9. A higher value means a smaller size and longer
     # compression time. If read raw images during training, use 0 for faster IO speed.
     if mode == 'single':
-        opt['input_folder'] = '../../datasets/displ_train'
-        opt['save_folder'] = '../../datasets/displ_train_sub'
+        opt['input_folder'] = '../../datasets/albedo_train'
+        opt['save_folder'] = '../../datasets/albedo_train_sub'
         opt['crop_sz'] = 480  # the size of each sub-image
         opt['step'] = 240  # step of the sliding crop window
         opt['thres_sz'] = 48  # size threshold
